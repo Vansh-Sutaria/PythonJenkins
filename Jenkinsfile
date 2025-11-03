@@ -80,7 +80,7 @@ pipeline {
 
         stage('Run Selenium Tests') {
             steps {
-                echo 'Executing tests...'
+                echo 'Executing tests....'
                 // CORRECTION: Ensure pytest.exe is on the next line or chained with '&'
                 bat """
                 venv\\Scripts\\activate.bat & venv\\Scripts\\pytest.exe --maxfail=1 --disable-warnings -q --junitxml=report.xml
