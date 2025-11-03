@@ -53,8 +53,7 @@ pipeline {
         stage('Checkout') {
             steps {
                 echo 'Checking out code...'
-                // FIX C: Use the repository URL linked to this job (Vansh-Sutaria/PythonJenkins)
-                // Using 'checkout scm' is the best practice here.
+                // Ensures checkout uses the repository URL defined in the job configuration
                 checkout scm 
             }
         }
@@ -62,31 +61,34 @@ pipeline {
         stage('Setup Environment') {
             steps {
                 echo 'Setting up Python Venv and installing dependencies...'
-                // FIX A: Removed all '//' comments.
-                // FIX B: We rely on the 'python' executable being in PATH or using 'py' (Windows Python Launcher).
-                // If 'python' fails, try replacing all 'python' commands with 'py'
-                bat '''
-                python -m venv venv
-                venv\\Scripts\\activate.bat & pip install -r requirements.txt
-                '''
+                
+                // DEFINITIVE FIX: Using your absolute, confirmed Python 3.12 path.
+                def PYTHON_EXECUTABLE = "C:\\Users\\Vansh\\AppData\\Local\\Programs\\Python\\Python312\\python.exe"
+                
+                bat """
+                // 1. Create venv using the absolute path to Python
+                "${PYTHON_EXECUTABLE}" -m venv venv
+                
+                // 2. Install dependencies using the venv's pip executable
+                venv\\Scripts\\activate.bat & venv\\Scripts\\pip.exe install -r requirements.txt
+                """
             }
         }
 
         stage('Run Selenium Tests') {
             steps {
                 echo 'Executing tests...'
-                // FIX A: Removed all '//' comments.
-                bat '''
+                // Use the venv's activation script and its pytest executable
+                bat """
                 venv\\Scripts\\activate.bat & 
-                pytest --maxfail=1 --disable-warnings -q --junitxml=report.xml
-                '''
+                venv\\Scripts\\pytest.exe --maxfail=1 --disable-warnings -q --junitxml=report.xml
+                """
             }
         }
 
         stage('Publish Results') {
             steps {
                 echo 'Publishing results to Jenkins...'
-                // Pytest creates the file, we just publish it.
                 junit 'report.xml'
             }
         }
