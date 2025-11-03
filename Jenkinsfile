@@ -81,10 +81,9 @@ pipeline {
         stage('Run Selenium Tests') {
             steps {
                 echo 'Executing tests...'
-                // Use the venv's activation script and its pytest executable
+                // CORRECTION: Ensure pytest.exe is on the next line or chained with '&'
                 bat """
-                venv\\Scripts\\activate.bat & 
-                venv\\Scripts\\pytest.exe --maxfail=1 --disable-warnings -q --junitxml=report.xml
+                venv\\Scripts\\activate.bat & venv\\Scripts\\pytest.exe --maxfail=1 --disable-warnings -q --junitxml=report.xml
                 """
             }
         }
