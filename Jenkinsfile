@@ -49,11 +49,16 @@
 pipeline {
     agent any
 
+    // FIX: Define the executable path in the environment block
+    environment {
+        // This is now correctly defined at the pipeline level
+        PYTHON_EXECUTABLE = "C:\\Users\\Vansh\\AppData\\Local\\Programs\\Python\\Python312\\python.exe"
+    }
+
     stages {
         stage('Checkout') {
             steps {
                 echo 'Checking out code...'
-                // Ensures checkout uses the repository URL defined in the job configuration
                 checkout scm 
             }
         }
@@ -62,12 +67,10 @@ pipeline {
             steps {
                 echo 'Setting up Python Venv and installing dependencies...'
                 
-                // DEFINITIVE FIX: Using your absolute, confirmed Python 3.12 path.
-                def PYTHON_EXECUTABLE = "C:\\Users\\Vansh\\AppData\\Local\\Programs\\Python\\Python312\\python.exe"
-                
+                // Now we reference the environment variable, which works inside 'bat'
                 bat """
-                // 1. Create venv using the absolute path to Python
-                "${PYTHON_EXECUTABLE}" -m venv venv
+                // 1. Create venv using the absolute path from the environment block
+                "${env.PYTHON_EXECUTABLE}" -m venv venv
                 
                 // 2. Install dependencies using the venv's pip executable
                 venv\\Scripts\\activate.bat & venv\\Scripts\\pip.exe install -r requirements.txt
